@@ -1,0 +1,46 @@
+﻿@model IEnumerable<LikeList>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>產品名稱</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Product.ProductName</td>
+                <td>
+                    <button class="btn btn-danger delete-btn"
+                            data-sn="@item.SN">
+                        刪除
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.delete-btn').click(function () {
+                var sn = $(this).data('sn');
+                if (confirm('確定要刪除此項目嗎？')) {
+                    $.ajax({
+                        url: '/LikeList/Delete/' + sn,
+                        type: 'POST',
+                        success: function () {
+                            location.reload(); // 刷新頁面
+                        },
+                        error: function () {
+                            alert('刪除失敗');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}
