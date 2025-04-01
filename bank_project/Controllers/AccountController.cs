@@ -21,13 +21,23 @@ namespace bank_project.Controllers
         public async Task<IActionResult> Profile()
         {
             // 取得當前登入用戶ID
-            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var userId = int.Parse(Users.FindFirstValue(ClaimTypes.NameIdentifier));
+            Console.WriteLine($"當前用戶ID: {userId}");
 
             // 查詢用戶資料和喜好清單
             var users = await _context.Users.FindAsync(userId);
+            if (users == null)
+            {
+                Console.WriteLine("未找到用戶");
+                return NotFound();
+            }
+            Console.WriteLine($"用户账户: {users.Account}");
+
             var likeList = await _context.LikeList
                 .Where(l => l.Account == users.Account)
                 .ToListAsync();
+
+            Console.WriteLine($"找到 {likeList.Count} 条喜好记录");
 
             var ViewModels = new UserProfileViewModel
             {
@@ -38,4 +48,5 @@ namespace bank_project.Controllers
             return View(ViewModels);
         }
     }
+   
 }

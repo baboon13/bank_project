@@ -3,19 +3,13 @@ using bank_project.Repositories;
 using bank_project.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-//註冊自訂服務
-//builder.Services.AddScoped<DapperContext>(); //DB連線
 
-// 資料存取層
-//builder.Services.AddScoped<IProductRepository, ProductRepository>();
-
-// 業務邏輯層
-//builder.Services.AddScoped<IProductService, ProductService>();
 // 添加服務到容器
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -29,8 +23,6 @@ builder.Configuration.AddInMemoryCollection(new[]
 });
 
 
-// 添加服務到容器
-//builder.Services.AddControllersWithViews();
 
 // 添加身份驗證服務
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

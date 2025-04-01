@@ -10,8 +10,9 @@ namespace bank_project.Models
         public int SN { get; set; }  //流水序號
 
         [ForeignKey("UserID")]
-        public Users Users { get; set; }
-        public int UserID { get; set; }
+        // ✅ 單數導航屬性
+        public User User { get; set; }
+        public int UserId { get; set; }       
 
         [ForeignKey("No")]
         public Product Product { get; set; }

@@ -20,6 +20,6 @@ namespace bank_project.Models
         [Column(TypeName = "decimal(5,2)")]
         public decimal FeeRate { get; set; } // 以百分比儲存，例如 10.00 表示 10%
 
-        public ICollection<LikeList> LikeList { get; set; }
+        public ICollection<LikeList> LikeLists { get; set; }
     }
 }

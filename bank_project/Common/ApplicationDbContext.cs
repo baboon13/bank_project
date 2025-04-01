@@ -3,29 +3,25 @@
 namespace bank_project.Common
 {
     using Microsoft.EntityFrameworkCore;
+    using System;
     using System.Collections.Generic;
     using System.Reflection.Emit;
 
     public class ApplicationDbContext : DbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-            : base(options)
-        {
-        }
-
-        // 使用單數形式與資料庫表名對應
-        public DbSet<Users> Users { get; set; }
-        public DbSet<Product> Product { get; set; }
-        public DbSet<LikeList> LikeList { get; set; }
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
+        // 修正 DbSet 屬性名稱為複數 (對應資料庫表名)
+        public DbSet<User> Users { get; set; }  // 單數實體類，複數 DbSet
+        public DbSet<Product> Products { get; set; }
+        public DbSet<LikeList> LikeLists { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // 配置 LikeList 與 Users 的關係
+            // 配置 LikeList 與 User 的關係
             modelBuilder.Entity<LikeList>()
-                .HasOne(ll => ll.Users)
-                .WithMany(u => u.LikeList)
-                .HasForeignKey(ll => ll.UserID)
-                .OnDelete(DeleteBehavior.Restrict); // 防止級聯刪除
+                .HasOne(ll => ll.Users)  // 單數導航屬性
+                .WithMany(u => u.LikeLists)  // 複數集合
+                .HasForeignKey(ll => ll.UserID);
 
             // 配置 LikeList 與 Product 的關係
             modelBuilder.Entity<LikeList>()
@@ -42,16 +38,15 @@ namespace bank_project.Common
             modelBuilder.Entity<Product>()
                 .Property(p => p.FeeRate)
                 .HasColumnType("decimal(5,2)");
+            // 明確指定表名為複數 (可選，但建議保留以保持清晰)
+            modelBuilder.Entity<User>().ToTable("Users");
+            modelBuilder.Entity<Product>().ToTable("Products");
+            modelBuilder.Entity<LikeList>().ToTable("LikeLists");
 
-            // 設定表名為單數形式（可選）
-            modelBuilder.Entity<Users>().ToTable("User");
-            modelBuilder.Entity<Product>().ToTable("Product");
-            modelBuilder.Entity<LikeList>().ToTable("LikeList");
 
-            // 設定 LikeList 的預設值
-            //modelBuilder.Entity<LikeList>()
-                //.Property(ll => ll.CreatedDate)
-                //.HasDefaultValueSql("GETDATE()");
         }
+
     }
 }
+  
+     

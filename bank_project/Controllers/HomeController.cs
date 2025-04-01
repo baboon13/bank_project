@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+ï»¿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 public class HomeController : Controller
 {
-    private readonly IUserService _userService; // ²Î¤@ÅÜ¼Æ¦WºÙ
+    private readonly IUserService _userService; // çµ±ä¸€è®Šæ•¸åç¨±
 
-    public HomeController(IUserService userService) // ²Î¤@°Ñ¼Æ¦WºÙ
+    public HomeController(IUserService userService) // çµ±ä¸€åƒæ•¸åç¨±
     {
         _userService = userService;
     }
@@ -30,15 +30,18 @@ public class HomeController : Controller
         if (user != null)
         {
             var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()), // ­×¥¿ ClaimTypes
-                new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim("Account", user.Account)
-            };
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()),
+            new Claim(ClaimTypes.Name, user.UserName),
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim("Account", user.Account)
+        };
 
             var claimsIdentity = new ClaimsIdentity(
                 claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+            // æ·»åŠ è°ƒè¯•ä¿¡æ¯
+            Console.WriteLine($"ç”¨æˆ· {user.UserName} å·²ç™»å…¥ï¼ŒID: {user.UserID}");
 
             await HttpContext.SignInAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme,
@@ -51,7 +54,7 @@ public class HomeController : Controller
             });
         }
 
-        return Json(new { success = false, message = "¨Ï¥ÎªÌ¦WºÙ©Î±K½X¿ù»~" });
+        return Json(new { success = false, message = "ä½¿ç”¨è€…åç¨±æˆ–å¯†ç¢¼éŒ¯èª¤" });
     }
 
     [HttpPost]
@@ -68,7 +71,7 @@ public class HomeController : Controller
         var confirmPassword = Request.Form["ConfirmPassword"];
         if (user.Password1 != confirmPassword)
         {
-            return Json(new { success = false, message = "±K½X»P½T»{±K½X¤£¤@­P" });
+            return Json(new { success = false, message = "å¯†ç¢¼èˆ‡ç¢ºèªå¯†ç¢¼ä¸ä¸€è‡´" });
         }
 
         if (await _userService.RegisterAsync(user))
@@ -76,12 +79,12 @@ public class HomeController : Controller
             return Json(new
             {
                 success = true,
-                message = "µù¥U¦¨¥\¡A½Ğµn¤J",
+                message = "è¨»å†ŠæˆåŠŸï¼Œè«‹ç™»å…¥",
                 redirectUrl = Url.Action("Index", "Home")
             });
         }
 
-        return Json(new { success = false, message = "¨Ï¥ÎªÌ¦WºÙ¤w¦s¦b" });
+        return Json(new { success = false, message = "ä½¿ç”¨è€…åç¨±å·²å­˜åœ¨" });
     }
 
     [HttpPost]

@@ -8,8 +8,8 @@
 
     public interface IUserService  // 用戶服務介面定義
     {
-        Task<bool> RegisterAsync(Users user);  // 註冊新用戶
-        Task<Users> AuthenticateAsync(string username, string password);  // 用戶認證（登入檢查）
+        Task<bool> RegisterAsync(User user);  // 註冊新用戶
+        Task<User> AuthenticateAsync(string username, string password);  // 用戶認證（登入檢查）
         Task<bool> UserExistsAsync(string username);  // 檢查使用者名稱是否已存在
     }
 
@@ -26,7 +26,7 @@
             _configuration = configuration;
         }
 
-        public async Task<bool> RegisterAsync(Users user)
+        public async Task<bool> RegisterAsync(User user)
         {
             // 檢查用戶名是否已存在
             if (await _context.Users.AnyAsync(u => u.UserName == user.UserName))
