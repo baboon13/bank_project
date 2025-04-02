@@ -4,8 +4,9 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
 using bank_project.Services;
-using System.Linq; 
-using System.Threading.Tasks; 
+using System.Linq;
+using System.Threading.Tasks;
+using bank_project.Models;
 
 public class HomeController : Controller
 {
@@ -30,18 +31,15 @@ public class HomeController : Controller
         if (user != null)
         {
             var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()),
-            new Claim(ClaimTypes.Name, user.UserName),
-            new Claim(ClaimTypes.Email, user.Email),
-            new Claim("Account", user.Account)
-        };
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()), // 修正 ClaimTypes
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim("Account", user.Account)
+            };
 
             var claimsIdentity = new ClaimsIdentity(
                 claims, CookieAuthenticationDefaults.AuthenticationScheme);
-
-            // 添加调试信息
-            Console.WriteLine($"用户 {user.UserName} 已登入，ID: {user.UserID}");
 
             await HttpContext.SignInAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme,
@@ -58,7 +56,7 @@ public class HomeController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Register(Users user)
+    public async Task<IActionResult> Register(UserData user)
     {
         if (!ModelState.IsValid)
         {
@@ -69,7 +67,7 @@ public class HomeController : Controller
         }
 
         var confirmPassword = Request.Form["ConfirmPassword"];
-        if (user.Password1 != confirmPassword)
+        if (user.password1 != confirmPassword)
         {
             return Json(new { success = false, message = "密碼與確認密碼不一致" });
         }

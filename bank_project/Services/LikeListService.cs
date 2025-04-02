@@ -3,7 +3,7 @@ using bank_project.Repositories;
 
 namespace bank_project.Services
 {
-    public class LikeListService : ILikeListService
+    /*public class LikeListService : ILikeListService
     {
         private readonly ILikeListRepository _repository;
 
@@ -71,5 +71,5 @@ namespace bank_project.Services
             await _repository.CalculateTotalsAsync(likeList);
             await _repository.UpdateLikeListItemAsync(likeList);
         }
-    }
+    }*/
 }

@@ -1,4 +1,4 @@
-using bank_project.Common;
+using bank_project.Models;
 using bank_project.Repositories;
 using bank_project.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -9,19 +9,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-
-// 添加服務到容器
+   
+// 替換為 SQL Server 連接字串
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServerConnection")));  //database
 
 builder.Services.AddScoped<IUserService, UserService>();
-
-// 添加鹽值配置 (用於密碼哈希)
-builder.Configuration.AddInMemoryCollection(new[]
-{
-    new KeyValuePair<string, string>("Salt", "your-secret-salt-value")
-});
-
 
 
 // 添加身份驗證服務
@@ -57,8 +50,6 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-
-//var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

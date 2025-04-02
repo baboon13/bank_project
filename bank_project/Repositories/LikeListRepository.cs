@@ -1,14 +1,13 @@
 ﻿namespace bank_project.Repositories
 {
-    using bank_project.Common;
     using bank_project.Models;
     using Dapper;
     using Microsoft.EntityFrameworkCore;
     using System.Data;
 
-    public class LikeListRepository : ILikeListRepository
+    public class LikeListRepository 
     {
-        private readonly ApplicationDbContext _context;
+        /*private readonly ApplicationDbContext _context;
 
         public LikeListRepository(ApplicationDbContext context)
         {
@@ -18,11 +17,11 @@
         // 新增這個方法來檢查產品是否存在
         public async Task<bool> ProductExistsAsync(int productId)
         {
-            return await _context.Product
+            return await _context.ProductData
                 .AnyAsync(p => p.No == productId);
         }
 
-        public async Task CalculateTotalsAsync(LikeList likeList)
+        public async Task CalculateTotalsAsync(LikeListData likeList)
         {
             var product = await _context.Product
                 .FirstOrDefaultAsync(p => p.No == likeList.No);
@@ -30,24 +29,23 @@
             if (product?.Price != null && product.FeeRate != null)
             {
                 // 計算總金額和手續費（轉換為整數）
-                likeList.TotalAmount = (int)(product.Price * likeList.OrderNUM);
                 likeList.TotalFee = (int)(likeList.TotalAmount * (product.FeeRate / 100));
             }
         }
 
-        public async Task AddToLikeListAsync(LikeList likeList)
+        public async Task AddToLikeListAsync(LikeListData likeList)
         {
             //likeList.UpdatedDate = DateTime.Now;
-            await _context.LikeList.AddAsync(likeList);
+            await _context.LikeListData.AddAsync(likeList);
             await _context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Product>> GetAllProductsAsync()
+        public async Task<IEnumerable<ProductData>> GetAllProductsAsync()
         {
             return await _context.Product.ToListAsync();
         }
 
-        public async Task<IEnumerable<LikeList>> GetUserLikeListAsync(int userId)
+        public async Task<IEnumerable<LikeListData>> GetUserLikeListAsync(int userId)
         {
             return await _context.LikeList
                 .Include(ll => ll.Product)
@@ -55,14 +53,14 @@
                 .ToListAsync();
         }
 
-        public async Task<LikeList> GetLikeListItemAsync(int sn)
+        public async Task<LikeListData> GetLikeListItemAsync(int sn)
         {
-            return await _context.LikeList
+            return await _context.LikeListData
                 .Include(ll => ll.Product)
                 .FirstOrDefaultAsync(ll => ll.SN == sn);
         }
 
-        public async Task UpdateLikeListItemAsync(LikeList likeList)
+        public async Task UpdateLikeListItemAsync(LikeListData likeList)
         {
             //likeList.UpdatedDate = DateTime.Now;
             _context.LikeList.Update(likeList);
@@ -77,6 +75,6 @@
                 _context.LikeList.Remove(likeListItem);
                 await _context.SaveChangesAsync();
             }
-        }
+        }*/
     }
 }

@@ -1,77 +1,60 @@
 ﻿using bank_project.Models;
 using bank_project.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
-using System.Security.Claims;
+using System;
 
-namespace bank_project.Controllers
+public class LikeListController : Controller
 {
-    [Authorize]
-    [ApiController]
-    [Route("api/[controller]")]
-    public class LikeListController : ControllerBase
+    private readonly DapperService _dapper;
+    private readonly ApplicationDbContext _context;
+
+    public LikeListController(DapperService dapper, ApplicationDbContext context)
     {
-        private readonly ILikeListService _likeListService;
-        private readonly ILogger<LikeListController> _logger;
+        _dapper = dapper;
+        _context = context;
+    }
 
-        public LikeListController(
-            ILikeListService likeListService,
-            ILogger<LikeListController> logger)
-        {
-            _likeListService = likeListService;
-            _logger = logger;
-        }
+    // 查詢喜好清單
+    public async Task<IActionResult> Index()
+    {
+        var likeLists = await _dapper.QueryStoredProcedure<LikeListData>(
+            "sp_GetLikeLists",
+            new { Account = User.Identity.Name });
 
-        [HttpGet("products")]
-        public async Task<IActionResult> GetAvailableProducts()
-        {
-            var products = await _likeListService.GetAvailableProductsAsync();
-            return Ok(products);
-        }
+        return View(likeLists);
+    }
 
-        [HttpPost]
-        public async Task<IActionResult> AddToLikeList([FromBody] LikeListRequest request)
+    // 新增喜好商品
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(LikeListCreateModel model)
+    {
+        if (ModelState.IsValid)
         {
-            if (!ModelState.IsValid)
+            using (var transaction = await _context.Database.BeginTransactionAsync())
             {
-                return BadRequest(ModelState);
-            }
-
-            try
-            {
-                var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-                var likeList = new LikeList
+                try
                 {
-                    No = request.No,
-                    Account = request.Account,
-                    OrderNUM = request.OrderNum
-                };
+                    // 使用交易確保多表操作一致性
+                    await _dapper.ExecuteStoredProcedure("sp_AddLikeList", new
+                    {
+                        model.ProductNo,
+                        model.OrderName,
+                        Account = User.Identity.Name
+                    });
 
-                await _likeListService.AddToLikeListAsync(userId, likeList);
-                return Ok(new { Message = "已成功加入喜好清單" });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "添加至喜好清單失敗");
-                return StatusCode(500, new { Message = "添加失敗，請稍後再試" });
+                    await transaction.CommitAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                catch
+                {
+                    await transaction.RollbackAsync();
+                    throw;
+                }
             }
         }
-
-        // 其他 API 端點...
+        return View(model);
     }
 
-    public class LikeListRequest
-    {
-        [Required]
-        public int No { get; set; }
-
-        [Required]
-        [StringLength(50)]
-        public string Account { get; set; }
-
-        [Required]
-        [Range(1, 100)]
-        public int OrderNum { get; set; }
-    }
+    // 其他動作方法...
 }

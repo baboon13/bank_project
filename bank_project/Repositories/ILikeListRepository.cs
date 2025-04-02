@@ -4,13 +4,13 @@ namespace bank_project.Repositories
 {
     public interface ILikeListRepository
     {
-        Task<IEnumerable<Product>> GetAllProductsAsync();
-        Task AddToLikeListAsync(LikeList likeList);
-        Task<IEnumerable<LikeList>> GetUserLikeListAsync(int userId);
-        Task<LikeList> GetLikeListItemAsync(int sn);
-        Task UpdateLikeListItemAsync(LikeList likeList);
+        Task<IEnumerable<ProductData>> GetAllProductsAsync();
+        Task AddToLikeListAsync(LikeListData likeList);
+        Task<IEnumerable<LikeListData>> GetUserLikeListAsync(int userId);
+        Task<LikeListData> GetLikeListItemAsync(int sn);
+        Task UpdateLikeListItemAsync(LikeListData likeList);
         Task DeleteLikeListItemAsync(int sn);
-        Task CalculateTotalsAsync(LikeList likeList);
+        Task CalculateTotalsAsync(LikeListData likeList);
         Task<bool> ProductExistsAsync(int no);
     }
     
