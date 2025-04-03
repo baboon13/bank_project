@@ -1,4 +1,3 @@
-using bank_project.Models;
 using bank_project.Repositories;
 using bank_project.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -12,7 +11,7 @@ builder.Services.AddControllersWithViews();
    
 // ´À´«¬° SQL Server ³s±µ¦r¦ê
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServerConnection")));  //database
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));  //database
 
 builder.Services.AddScoped<IUserService, UserService>();
 

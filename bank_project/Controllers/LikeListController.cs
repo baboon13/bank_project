@@ -5,56 +5,19 @@ using System;
 
 public class LikeListController : Controller
 {
-    private readonly DapperService _dapper;
-    private readonly ApplicationDbContext _context;
+    private readonly ApplicationDbContext context;
 
-    public LikeListController(DapperService dapper, ApplicationDbContext context)
+    public LikeListController(ApplicationDbContext context)
     {
-        _dapper = dapper;
-        _context = context;
+        this.context = context;
     }
 
-    // 查詢喜好清單
-    public async Task<IActionResult> Index()
+    // 喜好清單
+    public IActionResult Index()
     {
-        var likeLists = await _dapper.QueryStoredProcedure<LikeListData>(
-            "sp_GetLikeLists",
-            new { Account = User.Identity.Name });
+        var likeList = context.LikeLists.ToList();
 
-        return View(likeLists);
+        return View(likeList);
     }
 
-    // 新增喜好商品
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(LikeListCreateModel model)
-    {
-        if (ModelState.IsValid)
-        {
-            using (var transaction = await _context.Database.BeginTransactionAsync())
-            {
-                try
-                {
-                    // 使用交易確保多表操作一致性
-                    await _dapper.ExecuteStoredProcedure("sp_AddLikeList", new
-                    {
-                        model.ProductNo,
-                        model.OrderName,
-                        Account = User.Identity.Name
-                    });
-
-                    await transaction.CommitAsync();
-                    return RedirectToAction(nameof(Index));
-                }
-                catch
-                {
-                    await transaction.RollbackAsync();
-                    throw;
-                }
-            }
-        }
-        return View(model);
-    }
-
-    // 其他動作方法...
 }

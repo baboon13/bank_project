@@ -1,0 +1,68 @@
+﻿@model List<LikeListData>
+@{
+    ViewData["Title"] = "喜好清單管理";
+}
+
+<h2 class="text-center mb-5">喜好清單列表</h2>
+
+<div class="row mb-5">
+    <div class="col">
+        <a class="btn btn-primary" asp-controller="LikeList" asp-action="Create">
+            <i class="bi bi-plus-circle"></i> 新增喜好清單
+        </a>
+    </div>
+    <div class="col text-end">
+        <!-- 可加入搜尋或其他功能 -->
+    </div>
+</div>
+
+<table class="table table-striped table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>流水序號</th>
+            <th>購買數量</th>
+            <th>扣款帳號</th>
+            <th>總手續費(台幣)</th>
+            <th>扣款總金額</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var likeList in Model)
+        {
+            <tr>
+                <td>@likeList.SN</td>
+                <td>@likeList.OrderName</td>
+                <td>@likeList.Account</td>
+                <td>@(likeList.TotalFee.HasValue ? likeList.TotalFee.Value.ToString("C0") : "-")</td>
+                <td>@(likeList.TotalAmount.HasValue ? likeList.TotalAmount.Value.ToString("C0") : "-")</td>
+                <td style="white-space:nowrap">
+                    <a class="btn btn-primary btn-sm" asp-controller="LikeList" asp-action="Edit" asp-route-id="@likeList.SN">
+                        <i class="bi bi-pencil"></i> 編輯
+                    </a>
+                    <a class="btn btn-danger btn-sm ms-2" asp-controller="LikeList" asp-action="Delete" asp-route-id="@likeList.SN">
+                        <i class="bi bi-trash"></i> 刪除
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">目前沒有喜好清單資料</div>
+}
+
+@section Scripts {
+    <script>
+        // 刪除確認對話框
+        document.querySelectorAll('.btn-danger').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                if (!confirm('確定要刪除此筆喜好清單嗎？')) {
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+}
