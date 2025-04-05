@@ -1,49 +1,43 @@
-﻿-- 初始使用者資料
-INSERT INTO UserData VALUES 
-('A1236456789', '王小明', 'test@email.com', '1111999666');
-GO
+﻿INSERT INTO [UserData] (UserID, UserName, Email, Account ,password1)
+VALUES
+('U001', 'John Smith', 'ming@example.com', 'ACC12345678','123'),
+('U002', 'Emily Johnson', 'tong@example.com', 'ACC23456789','123'),
+('U003', 'Michael Brown', 'mei@example.com', 'ACC34567890','123'),
+('U004', 'Sarah Davis', 'hua@example.com', 'ACC45678901','123'),
+('U005', 'David Wilson', 'wei@example.com', 'ACC56789012','123'),
+('U006', 'Jennifer Lee', 'yu@example.com', 'ACC67890123','123'),
+('U007', 'Robert Taylor', 'zhong@example.com', 'ACC78901234','123'),
+('U008', 'Jessica Clark', 'fen@example.com', 'ACC89012345','123'),
+('U009', 'Thomas Martinez', 'wen@example.com', 'ACC90123456','123'),
+('U010', 'Amanda Rodriguez', 'lan@example.com', 'ACC01234567','123');
+INSERT INTO ProductData ("No", ProductName, Price, FeeRate)
+VALUES
+('P001', 'Global Equity Fund', 10000, 0.01),
+('P002', 'Tech Growth ETF', 5000, 0.015),
+('P003', 'Bond Plus', 8000, 0.02),
+('P004', 'Emerging Markets', 12000, 0.025),
+('P005', 'Sustainable Energy', 7000, 0.03),
+('P006', 'Healthcare Innovators', 6000, 0.01),
+('P007', 'Dividend Champions', 9000, 0.015),
+('P008', 'Real Estate Trust', 3000, 0.02),
+('P009', 'Small Cap Opportunities', 10000, 0.01),
+('P010', 'Commodity Tracker', 15000, 0.025);
+INSERT INTO LikeListData (SN, OrderName, Account, TotalFee, TotalAmount)
+VALUES
+(1, '5 unit', 'ACC12345678', 50, 5000),
+(2, '3 unit', 'ACC23456789', 22.5, 1500),
+(3, '2 unit', 'ACC34567890', 32, 1600),
+(4, '10 unit', 'ACC45678901', 150, 7500),
+(5, '1 unit', 'ACC56789012', 12, 1200),
+(6, '8 unit', 'ACC67890123', 96, 4800),
+(7, '4 unit', 'ACC78901234', 36, 3600),
+(8, '7 unit', 'ACC89012345', 105, 5250),
+(9, '6 unit', 'ACC90123456', 90, 9000),
+(10, '2 unit', 'ACC01234567', 30, 3000);
 
--- 初始產品資料
-INSERT INTO ProductData VALUES
-('P001', '玉山基金', 5000, 0.015),
-('P002', '科技ETF', 300, 0.01);
-GO
 
--- 建立取得喜好清單的儲存過程
-CREATE PROCEDURE sp_GetLikeLists
-    @Account NVARCHAR(50)
-AS
-BEGIN
-    SELECT 
-        l.SN, p.[Product Name] AS ProductName, p.Price, p.[Fee rate] AS FeeRate,
-        l.OrderName, l.TotalAmount, l.TotalFee, u.Email
-    FROM LikeListData l
-    JOIN ProductData p ON l.ProductNo = p.No
-    JOIN UserData u ON l.Account = u.Account
-    WHERE l.Account = @Account
-END
-GO
+ALTER TABLE ProductData ALTER COLUMN FeeRate DECIMAL(18,2);
+ALTER TABLE ProductData ALTER COLUMN Price DECIMAL(18,2);
 
--- 建立新增喜好清單的儲存過程
-CREATE PROCEDURE sp_AddLikeList
-    @ProductNo VARCHAR(20),
-    @OrderName INT,
-    @Account NVARCHAR(50)
-AS
-BEGIN
-    DECLARE @Price INT, @FeeRate DECIMAL(18,4)
-    
-    -- 取得產品價格和費率
-    SELECT @Price = Price, @FeeRate = [Fee rate]
-    FROM ProductData
-    WHERE No = @ProductNo
-    
-    -- 計算總金額和手續費
-    DECLARE @TotalAmount INT = @Price * @OrderName
-    DECLARE @TotalFee INT = @TotalAmount * @FeeRate
-    
-    -- 插入喜好清單
-    INSERT INTO LikeListData (OrderName, Account, TotalFee, TotalAmount, ProductNo)
-    VALUES (@OrderName, @Account, @TotalFee, @TotalAmount, @ProductNo)
-END
-Go
+ALTER TABLE LikeListData ALTER COLUMN TotalFee DECIMAL(18,2);
+ALTER TABLE LikeListData ALTER COLUMN TotalAmount DECIMAL(18,2);

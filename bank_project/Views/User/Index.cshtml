@@ -37,15 +37,15 @@
         @foreach (var user in Model)
         {
             <tr>
-                <td>@user.UserID</td>
+                <td>@user.Id</td>
                 <td>@user.UserName</td>
                 <td>@user.Email</td>
                 <td>@user.Account</td>
                 <td style="white-space:nowrap">
-                    <a class="btn btn-primary btn-sm" asp-controller="User" asp-action="Edit" asp-route-id="@user.UserID">
+                    <a class="btn btn-primary btn-sm" asp-controller="User" asp-action="Edit" asp-route-id="@user.Id">
                         <i class="bi bi-pencil"></i> 編輯
                     </a>
-                    <a class="btn btn-danger btn-sm ms-2" asp-controller="User" asp-action="Delete" asp-route-id="@user.UserID">
+                    <a class="btn btn-danger btn-sm ms-2" asp-controller="User" asp-action="Delete" asp-route-id="@user.Id">
                         <i class="bi bi-trash"></i> 刪除
                     </a>
                 </td>

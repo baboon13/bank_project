@@ -1,0 +1,95 @@
+﻿@model bank_project.Models.ProductData
+
+@{
+    ViewData["Title"] = "編輯產品";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-pencil-square"></i> @ViewData["Title"]
+                    </h4>
+                </div>
+
+                <div class="card-body">
+                    <form asp-action="Edit">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <!-- 產品流水號 (唯讀) -->
+                        <div class="mb-3">
+                            <label asp-for="No" class="form-label">產品編號</label>
+                            <input asp-for="No" class="form-control" readonly />
+                            <span asp-validation-for="No" class="text-danger"></span>
+                        </div>
+
+                        <!-- 產品名稱 -->
+                        <div class="mb-3">
+                            <label asp-for="ProductName" class="form-label">產品名稱</label>
+                            <input asp-for="ProductName" class="form-control" placeholder="輸入產品名稱" />
+                            <span asp-validation-for="ProductName" class="text-danger"></span>
+                        </div>
+
+                        <!-- 產品價格 -->
+                        <div class="mb-3">
+                            <label asp-for="Price" class="form-label">價格</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input asp-for="Price" class="form-control" type="number" step="0.01" placeholder="0.00" />
+                            </div>
+                            <span asp-validation-for="Price" class="text-danger"></span>
+                        </div>
+
+                        <!-- 手續費率 -->
+                        <div class="mb-4">
+                            <label asp-for="FeeRate" class="form-label">手續費率 (%)</label>
+                            <div class="input-group">
+                                <input asp-for="FeeRate" class="form-control" type="number" step="0.0001" placeholder="例：0.0123 (代表 1.23%)" />
+                                <span class="input-group-text">%</span>
+                            </div>
+                            <span asp-validation-for="FeeRate" class="text-danger"></span>
+                        </div>
+
+                        <!-- 隱藏欄位 -->
+                        <input type="hidden" asp-for="No" />
+
+                        <!-- 操作按鈕 -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <button type="submit" class="btn btn-primary me-md-2">
+                                <i class="bi bi-save"></i> 儲存變更
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left"></i> 返回列表
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <!-- 自動格式化輸入 -->
+    <script>
+        $(document).ready(function () {
+            // 價格自動格式化為兩位小數
+            $('#Price').on('blur', function () {
+                const value = parseFloat($(this).val()).toFixed(2);
+                $(this).val(isNaN(value) ? '' : value);
+            });
+
+            // 手續費率自動格式化為四位小數
+            $('#FeeRate').on('blur', function () {
+                const value = parseFloat($(this).val()).toFixed(4);
+                $(this).val(isNaN(value) ? '' : value);
+            });
+        });
+    </script>
+}

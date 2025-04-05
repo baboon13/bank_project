@@ -10,12 +10,12 @@ using bank_project.Models;
 
 public class HomeController : Controller
 {
-    private readonly IUserService _userService; // 統一變數名稱
+    //private readonly IUserService _userService; // 統一變數名稱
 
-    public HomeController(IUserService userService) // 統一參數名稱
-    {
-        _userService = userService;
-    }
+   // public HomeController(IUserService userService) // 統一參數名稱
+    //{
+    //    _userService = userService;
+   // }
 
     [HttpGet]
     public IActionResult Index()

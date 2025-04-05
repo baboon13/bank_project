@@ -8,7 +8,7 @@ namespace bank_project.Controllers
     {
         private readonly ApplicationDbContext context;
 
-        public UserController(ApplicationDbContext context)
+        /*public UserController(ApplicationDbContext context)
         {
             this.context = context;
         }
@@ -16,6 +16,6 @@ namespace bank_project.Controllers
         {
             var user = context.Users.ToList();
             return View(user);
-        }
+        }*/
     }
 }

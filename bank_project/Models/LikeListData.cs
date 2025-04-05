@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Identity;
 
 namespace bank_project.Models
 {
@@ -20,6 +21,7 @@ namespace bank_project.Models
         public int? TotalFee { get; set; } // 允許 NULL
 
         public int? TotalAmount { get; set; }
+
     }
 }
 

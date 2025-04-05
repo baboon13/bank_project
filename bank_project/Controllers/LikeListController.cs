@@ -1,23 +1,38 @@
 ﻿using bank_project.Models;
 using bank_project.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 
+[Authorize]
 public class LikeListController : Controller
 {
-    private readonly ApplicationDbContext context;
+    private readonly ApplicationDbContext _context;
+    private readonly UserManager<UserData> _userManager;  // 使用自定義 User 類別
 
-    public LikeListController(ApplicationDbContext context)
+    public LikeListController(
+        ApplicationDbContext context,
+        UserManager<UserData> userManager)  // 注入 UserManager<User>
     {
-        this.context = context;
+        _context = context;
+        _userManager = userManager;
     }
 
-    // 喜好清單
-    public IActionResult Index()
+    // 合併 UserLists 和 MyList 的功能
+    public async Task<IActionResult> Index()
     {
-        var likeList = context.LikeLists.ToList();
+        var currentUser = await _userManager.GetUserAsync(User);
+        if (currentUser == null)
+        {
+            return Challenge();
+        }
 
-        return View(likeList);
+        var likeLists = await _context.LikeLists
+            .Where(l => l.Account == currentUser.Account)  // 使用 Account 關聯
+            .ToListAsync();
+
+        return View(likeLists);
     }
-
 }

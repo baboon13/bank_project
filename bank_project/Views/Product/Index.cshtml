@@ -47,9 +47,27 @@
     </tbody>
 </table>
 
-<!-- 分頁控制 (未來可加入) -->
-@* <div class="row">
-    <div class="col">
-        <partial name="_Pagination" />
-    </div>
-</div> *@
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // 刪除按鈕點擊事件
+            $('.delete-btn').click(function () {
+                var productId = $(this).data('id');
+                Swal.fire({
+                    title: '確認刪除？',
+                    text: "您確定要刪除此產品嗎？",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: '確認刪除',
+                    cancelButtonText: '取消'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = '@Url.Action("Delete", "Product")/' + productId;
+                    }
+                });
+            });
+        });
+    </script>
+}
