@@ -1,17 +1,21 @@
 ﻿using bank_project.Models;
 using bank_project.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace bank_project.Controllers
 {
     public class ProductController : Controller
     {
         private readonly ApplicationDbContext context;
+        private readonly UserManager<UserData> _userManager;
 
-        public ProductController(ApplicationDbContext context)
+        public ProductController(ApplicationDbContext context, UserManager<UserData> userManager)
         {
             this.context = context;
+            _userManager = userManager;
         }
         public IActionResult Index()
         {
@@ -134,5 +138,35 @@ namespace bank_project.Controllers
                 return View(product);
             }
         }
+        // 在 ProductController 中新增 AddToLikeList 動作
+        public async Task<IActionResult> AddToLikeList(string productNo)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser == null)
+            {
+                return RedirectToAction("Login", "Account");  // 確保使用者已經登入
+            }
+
+            var product = await this.context.Products.FindAsync(productNo);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            var likeList = new LikeListData
+            {
+                Account = currentUser.Account,
+                No = productNo,  // 設定商品編號
+                Product = product,  // 關聯商品
+                UserId = currentUser.Id,  // 設定 UserId 為當前使用者的 Id
+                OrderName = "Default Order"  // 設定 OrderName 的值
+            };
+
+            this.context.LikeLists.Add(likeList);
+            await this.context.SaveChangesAsync();
+
+            return RedirectToAction("Index");
+        }
+
     }
 }

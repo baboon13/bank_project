@@ -90,6 +90,13 @@ namespace bank_project.Services
                     .HasForeignKey(l => l.Account)
                     .HasPrincipalKey(u => u.Account)
                     .OnDelete(DeleteBehavior.Restrict);
+
+                // 設定 LikeListData 和 ProductData 之間的外鍵關聯
+                modelBuilder.Entity<LikeListData>()
+                    .HasOne(l => l.Product)
+                    .WithMany()
+                    .HasForeignKey(l => l.No)
+                    .OnDelete(DeleteBehavior.Restrict);  // 可選：設定刪除行為
             });
 
             

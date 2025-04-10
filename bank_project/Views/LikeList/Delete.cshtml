@@ -1,0 +1,73 @@
+﻿@model bank_project.Models.LikeListData
+
+@{
+    ViewData["Title"] = "刪除";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="card-title">
+                        <i class="bi bi-exclamation-triangle"></i> @ViewData["Title"]
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <h4 class="text-danger mb-4">您確定要刪除此喜好項目嗎？</h4>
+
+                    <dl class="row">
+                        <dt class="col-sm-3">產品編號</dt>
+                        <dd class="col-sm-9">@Html.DisplayFor(model => model.No)</dd>
+
+                        <dt class="col-sm-3">產品名稱</dt>
+                        <dd class="col-sm-9">@Html.DisplayFor(model => model.Product.ProductName)</dd>
+
+                        <dt class="col-sm-3">價格</dt>
+                        <dd class="col-sm-9">@Html.DisplayFor(model => model.Product.Price)</dd>
+
+                        <dt class="col-sm-3">手續費率</dt>
+                        <dd class="col-sm-9">@(Model.Product.FeeRate * 100)%</dd>
+                    </dl>
+
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-circle"></i> 注意：此操作無法復原！
+                    </div>
+
+                    <form asp-action="DeleteLikeList" method="post" id="deleteForm">
+                        <input type="hidden" asp-for="SN" />
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <button type="button" class="btn btn-danger me-md-2" id="confirmDelete">
+                                <i class="bi bi-trash"></i> 確認刪除
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left"></i> 返回列表
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('confirmDelete').addEventListener('click', function () {
+            Swal.fire({
+                title: '確定要刪除嗎？',
+                text: "此操作將永久刪除該喜好項目！",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: '確認刪除',
+                cancelButtonText: '取消'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('deleteForm').submit();
+                }
+            });
+        });
+    </script>
+}

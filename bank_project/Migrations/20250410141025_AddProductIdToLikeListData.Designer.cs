@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using bank_project.Services;
 
@@ -11,9 +12,11 @@ using bank_project.Services;
 namespace bank_project.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250410141025_AddProductIdToLikeListData")]
+    partial class AddProductIdToLikeListData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -172,15 +175,17 @@ namespace bank_project.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("No")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
                     b.Property<string>("OrderName")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ProductNo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<decimal?>("TotalAmount")
                         .HasColumnType("decimal(18,2)");
@@ -196,7 +201,7 @@ namespace bank_project.Migrations
 
                     b.HasIndex("Account");
 
-                    b.HasIndex("No");
+                    b.HasIndex("ProductNo");
 
                     b.HasIndex("UserId");
 
@@ -366,8 +371,8 @@ namespace bank_project.Migrations
 
                     b.HasOne("bank_project.Models.ProductData", "Product")
                         .WithMany()
-                        .HasForeignKey("No")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasForeignKey("ProductNo")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("bank_project.Models.UserData", "User")

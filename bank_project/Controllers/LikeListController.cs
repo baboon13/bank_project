@@ -4,33 +4,71 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System;
+using System.Linq;
+using System.Threading.Tasks;
 
-[Authorize]
-public class LikeListController : Controller
+namespace bank_project.Controllers
 {
-    private readonly ApplicationDbContext _context;
-    private readonly UserManager<UserData> _userManager;  // 使用自定義 User 類別
-
-    public LikeListController( ApplicationDbContext context, UserManager<UserData> userManager)  // 注入 UserManager<User>
-     {
-        _context = context;
-        _userManager = userManager;
-    }
-
-    public async Task<IActionResult> Index()
+    [Authorize]
+    public class LikeListController : Controller
     {
-        var currentUser = await _userManager.GetUserAsync(User);
-        if (currentUser == null)
+        private readonly ApplicationDbContext _context;
+        private readonly UserManager<UserData> _userManager;
+
+        public LikeListController(ApplicationDbContext context, UserManager<UserData> userManager)
         {
-            // 當使用者未登入，導向自訂的登入頁面
-            return RedirectToAction("Login", "Account"); // 指定導向的控制器和動作
+            _context = context;
+            _userManager = userManager;
         }
 
-        var likeLists = await _context.LikeLists
-            .Where(l => l.Account == currentUser.Account)  // 使用 Account 關聯
-            .ToListAsync();
+        // 顯示喜好清單
+        public async Task<IActionResult> Index()
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser == null)
+            {
+                return Challenge();
+            }
 
-        return View(likeLists);
+            var likeLists = await _context.LikeLists
+                .Where(l => l.Account == currentUser.Account)
+                .Include(l => l.Product)  // 加入產品資料，方便顯示
+                .ToListAsync();
+
+            return View(likeLists);
+        }
+
+        // 顯示新增喜好商品的頁面
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        // 處理新增喜好商品的表單
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(LikeListData model)
+        {
+            if (ModelState.IsValid)
+            {
+                var currentUser = await _userManager.GetUserAsync(User);
+                if (currentUser == null)
+                {
+                    return Challenge();  // 確保使用者已登入
+                }
+
+                model.UserId = currentUser.Id;  // 設置使用者 ID
+                model.Account = currentUser.Account;  // 設置使用者帳號
+
+                // 新增商品到資料庫
+                _context.LikeLists.Add(model);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction("Index");  // 重新導向到「我的喜好清單」
+            }
+
+            return View(model);  // 如果表單資料不合法，返回表單頁面
+        }
+
     }
 }

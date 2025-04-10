@@ -41,6 +41,13 @@
                     <a class="btn btn-danger btn-sm ms-2" asp-controller="Product" asp-action="Delete" asp-route-id="@product.No">
                         <i class="fas fa-trash-alt"></i> 刪除
                     </a>
+                        <!-- 放入喜好清單的按鈕 -->
+                        <form asp-action="AddToLikeList" method="post">
+                            <input type="hidden" name="productNo" value="@product.No" />
+                            <button type="submit" class="btn btn-primary">
+                                放入喜好清單
+                            </button>
+                        </form>
                 </td>
             </tr>
         }
