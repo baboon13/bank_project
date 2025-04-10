@@ -15,13 +15,14 @@ public class UserData : IdentityUser
     //[StringLength(20)]
     //public string UserID { get; set; }
 
-    [Required]
+    /*[Required]
     [StringLength(50)]
     public string UserName { get; set; }
 
+    [Required]
     [EmailAddress] 
     [StringLength(50)]
-    public string Email { get; set; }
+    public string Email { get; set; }*/
 
     [Required]
     [StringLength(50)]
@@ -30,6 +31,7 @@ public class UserData : IdentityUser
     // 注意：不應該直接存儲明文密碼
     // 應該使用 Identity 的 PasswordHash
     [NotMapped]  // 標記為不映射到資料庫
-    public string password1 { get; set; }
+    [DataType(DataType.Password)]
+    public string Password { get; set; }
 
 }

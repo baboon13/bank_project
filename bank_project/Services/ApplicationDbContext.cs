@@ -21,10 +21,22 @@ namespace bank_project.Services
         public DbSet<ProductData> Products { get; set; }
         public DbSet<LikeListData> LikeLists { get; set; }
 
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // 必須先調用基類方法
             base.OnModelCreating(modelBuilder);
+
+            // 可選：重命名 Identity 相關表名
+            modelBuilder.Entity<UserData>().ToTable("UserData");          // 用戶表
+            modelBuilder.Entity<IdentityRole>().ToTable("Roles");      // 角色表
+            modelBuilder.Entity<IdentityUserRole<string>>().ToTable("UserRoles");          // 用戶角色關聯表
+            modelBuilder.Entity<IdentityUserClaim<string>>().ToTable("UserClaims");        // 用戶聲明表
+            modelBuilder.Entity<IdentityUserLogin<string>>().ToTable("UserLogins");        // 用戶登入表
+            modelBuilder.Entity<IdentityUserToken<string>>().ToTable("UserTokens");        // 用戶令牌表
+            modelBuilder.Entity<IdentityRoleClaim<string>>().ToTable("RoleClaims");        // 角色聲明表
+            // 其他 Identity 表名配置...
 
             // 移除對 UserData 的主鍵配置，因為 IdentityUser 已經處理
 
@@ -80,11 +92,7 @@ namespace bank_project.Services
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
-            // 可選：重命名 Identity 相關表名
-            modelBuilder.Entity<UserData>().ToTable("Users");
-            modelBuilder.Entity<IdentityRole>().ToTable("Roles");
-            modelBuilder.Entity<IdentityUserRole<string>>().ToTable("UserRoles");
-            // 其他 Identity 表名配置...
+            
         }
     }
 }

@@ -12,8 +12,8 @@ using bank_project.Services;
 namespace bank_project.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250404170053_InitialIdentitySetup")]
-    partial class InitialIdentitySetup
+    [Migration("20250410121748_AddIdentitySchema")]
+    partial class AddIdentitySchema
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -74,7 +74,7 @@ namespace bank_project.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetRoleClaims", (string)null);
+                    b.ToTable("RoleClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -99,7 +99,7 @@ namespace bank_project.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserClaims", (string)null);
+                    b.ToTable("UserClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
@@ -123,7 +123,7 @@ namespace bank_project.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserLogins", (string)null);
+                    b.ToTable("UserLogins", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
@@ -159,7 +159,7 @@ namespace bank_project.Migrations
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AspNetUserTokens", (string)null);
+                    b.ToTable("UserTokens", (string)null);
                 });
 
             modelBuilder.Entity("bank_project.Models.LikeListData", b =>
@@ -186,9 +186,14 @@ namespace bank_project.Migrations
                     b.Property<decimal?>("TotalFee")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("SN");
 
                     b.HasIndex("Account");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("LikeListData");
                 });
@@ -291,7 +296,7 @@ namespace bank_project.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("UserData", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -353,6 +358,12 @@ namespace bank_project.Migrations
                         .HasPrincipalKey("Account")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("bank_project.Models.UserData", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }

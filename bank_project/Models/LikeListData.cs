@@ -22,6 +22,8 @@ namespace bank_project.Models
 
         public int? TotalAmount { get; set; }
 
+        // ✅ 不要使用 IdentityUser
+        // ✅ 使用 Account 當外鍵參照 UserData（搭配 OnModelCreating 裡的 Fluent API）
+        public UserData User { get; set; }
     }
 }
-

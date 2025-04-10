@@ -12,21 +12,19 @@ public class LikeListController : Controller
     private readonly ApplicationDbContext _context;
     private readonly UserManager<UserData> _userManager;  // 使用自定義 User 類別
 
-    public LikeListController(
-        ApplicationDbContext context,
-        UserManager<UserData> userManager)  // 注入 UserManager<User>
-    {
+    public LikeListController( ApplicationDbContext context, UserManager<UserData> userManager)  // 注入 UserManager<User>
+     {
         _context = context;
         _userManager = userManager;
     }
 
-    // 合併 UserLists 和 MyList 的功能
     public async Task<IActionResult> Index()
     {
         var currentUser = await _userManager.GetUserAsync(User);
         if (currentUser == null)
         {
-            return Challenge();
+            // 當使用者未登入，導向自訂的登入頁面
+            return RedirectToAction("Login", "Account"); // 指定導向的控制器和動作
         }
 
         var likeLists = await _context.LikeLists

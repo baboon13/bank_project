@@ -1,4 +1,6 @@
+ï»¿using bank_project.Models;
 using bank_project.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -8,45 +10,52 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// ¸ê®Æ®w¤W¤U¤å°t¸m
+// è³‡æ–™åº«ä¸Šä¸‹æ–‡é…ç½®
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
-// ²K¥[¨Ã°t¸m Identity ªA°È
-builder.Services.AddDefaultIdentity<IdentityUser>(options =>
-{
-    options.SignIn.RequireConfirmedAccount = false;
+// æ·»åŠ ä¸¦é…ç½® Identity æœå‹™
+builder.Services.AddDefaultIdentity<UserData>(options =>
+{ 
     options.Password.RequireDigit = true;
     options.Password.RequiredLength = 3;
     options.Password.RequireNonAlphanumeric = false;
     options.Password.RequireUppercase = false;
-
-    // ¨Ï¥Î Email §@¬°¥Î¤á¦W
+    // ä½¿ç”¨ Email ä½œç‚ºç”¨æˆ¶å
     options.User.RequireUniqueEmail = true;
 })
 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-// °t¸mµn¤J«áªº¦æ¬°
+// é…ç½®ç™»å…¥å¾Œçš„è¡Œç‚º
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.LoginPath = "/Identity/Account/Login";
-    options.LogoutPath = "/Identity/Account/Logout";
-    options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+    //options.LoginPath = "/Identity/Account/Login";
+    //options.LogoutPath = "/Identity/Account/Logout";
+    //options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+    options.LoginPath = "/Account/Login"; // ç¢ºä¿ç™»éŒ„é çš„è·¯å¾‘
+    options.LogoutPath = "/Account/Logout"; // ç™»å‡ºé 
+    options.AccessDeniedPath = "/Account/AccessDenied"; // è¨ªå•è¢«æ‹’é 
+    options.ReturnUrlParameter = CookieAuthenticationDefaults.ReturnUrlParameter;
 
-    // µn¤J«á­«©w¦V¨ì³ß¦n²M³æ
-    options.Events.OnSignedIn = async context =>
+    options.Events.OnRedirectToLogin = context =>
     {
-        var userId = context.Principal.FindFirstValue(ClaimTypes.NameIdentifier);
-        context.Response.Redirect($"/LikeList/UserLists");
+        context.Response.Redirect("/Identity/Account/Login");
+        return Task.CompletedTask;
     };
+    options.Events.OnRedirectToAccessDenied = context =>
+    {
+        context.Response.Redirect("/Identity/Account/AccessDenied");
+        return Task.CompletedTask;
+    };
+
 });
 
 builder.Services.AddRazorPages();
 
 var app = builder.Build();
 
-// °t¸mHTTP½Ğ¨DºŞ¹D
+// é…ç½®HTTPè«‹æ±‚ç®¡é“
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -58,11 +67,11 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-// ª`·N¶¶§Ç¡G¥ı»{ÃÒ¦A±ÂÅv
+// æ³¨æ„é †åºï¼šå…ˆèªè­‰å†æˆæ¬Š
 app.UseAuthentication();
 app.UseAuthorization();
 
-// ¬M®g¸ô¥Ñ
+// æ˜ å°„è·¯ç”±
 app.MapRazorPages();
 app.MapControllerRoute(
     name: "default",
