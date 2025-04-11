@@ -159,14 +159,16 @@ namespace bank_project.Controllers
                 No = productNo,  // 設定商品編號
                 Product = product,  // 關聯商品
                 UserId = currentUser.Id,  // 設定 UserId 為當前使用者的 Id
-                OrderName = "Default Order"  // 設定 OrderName 的值
+                //OrderName = "Default Order"  // 設定 OrderName 的值
             };
 
             this.context.LikeLists.Add(likeList);
             await this.context.SaveChangesAsync();
 
+            TempData["LikeSuccess"] = "已成功加入喜好清單！";
             return RedirectToAction("Index");
         }
+
 
     }
 }

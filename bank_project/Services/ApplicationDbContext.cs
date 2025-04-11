@@ -73,16 +73,20 @@ namespace bank_project.Services
             modelBuilder.Entity<LikeListData>(entity =>
             {
                 entity.HasKey(l => l.SN);
-                entity.Property(l => l.OrderName)
-                    .IsRequired()
-                    .HasMaxLength(100);
+
                 entity.Property(l => l.Account)
                     .IsRequired()
                     .HasMaxLength(50);
+
                 entity.Property(l => l.TotalFee)
                     .HasColumnType("decimal(18,2)");
+
                 entity.Property(l => l.TotalAmount)
                     .HasColumnType("decimal(18,2)");
+
+                entity.Property(l => l.Quantity)
+                    .HasDefaultValue(1)
+                    .IsRequired();
 
                 // 設定與 User 的關係 (使用 Account 作為外鍵)
                 entity.HasOne<UserData>()
@@ -91,15 +95,14 @@ namespace bank_project.Services
                     .HasPrincipalKey(u => u.Account)
                     .OnDelete(DeleteBehavior.Restrict);
 
-                // 設定 LikeListData 和 ProductData 之間的外鍵關聯
-                modelBuilder.Entity<LikeListData>()
-                    .HasOne(l => l.Product)
+                // 設定與 Product 的關係 (使用 No 作為外鍵)
+                entity.HasOne(l => l.Product)
                     .WithMany()
                     .HasForeignKey(l => l.No)
-                    .OnDelete(DeleteBehavior.Restrict);  // 可選：設定刪除行為
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
-            
+
         }
     }
 }

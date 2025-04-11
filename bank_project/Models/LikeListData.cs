@@ -11,16 +11,21 @@ namespace bank_project.Models
         public int SN { get; set; }
 
         [Required]
-        [StringLength(10)]
-        public string OrderName { get; set; }
-
-        [Required]
         [StringLength(50)]
         public string Account { get; set; }
 
         public int? TotalFee { get; set; } // 允許 NULL
 
         public int? TotalAmount { get; set; }
+
+        // ➕ 新增商品數量
+        // ✅ 新增的欄位：數量
+        [Required]
+        [Range(1, 1000, ErrorMessage = "數量必須介於 1 到 1000")]
+        public int Quantity { get; set; } = 1;  // ← 預設值 1
+
+
+        // 👉 移除 OrderName（若已存在）
 
         // 設定外鍵，關聯到 Product 的 No
         [Required]

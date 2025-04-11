@@ -16,7 +16,7 @@
     </div>
 </div>
 
-<table class="table table-striped table-hover">
+<table class="table table-striped table-hover align-middle">
     <thead class="table-dark">
         <tr>
             <th>產品流水號</th>
@@ -35,19 +35,20 @@
                 <td>@product.Price.ToString("C")</td> <!-- 使用貨幣格式 -->
                 <td>@(product.FeeRate.ToString("P1"))</td> <!-- 百分比格式，1位小數 -->
                 <td style="white-space:nowrap">
-                    <a class="btn btn-primary btn-sm" asp-controller="Product" asp-action="Edit" asp-route-id="@product.No">
-                        <i class="fas fa-edit"></i> 編輯
-                    </a>
-                    <a class="btn btn-danger btn-sm ms-2" asp-controller="Product" asp-action="Delete" asp-route-id="@product.No">
-                        <i class="fas fa-trash-alt"></i> 刪除
-                    </a>
-                        <!-- 放入喜好清單的按鈕 -->
-                        <form asp-action="AddToLikeList" method="post">
+                    <div class="d-flex flex-wrap gap-2">
+                        <a class="btn btn-sm btn-primary" asp-controller="Product" asp-action="Edit" asp-route-id="@product.No">
+                            <i class="fas fa-edit"></i> 編輯
+                        </a>
+                        <a class="btn btn-sm btn-danger delete-btn" data-id="@product.No">
+                            <i class="fas fa-trash-alt"></i> 刪除
+                        </a>
+                        <form asp-action="AddToLikeList" method="post" class="d-inline">
                             <input type="hidden" name="productNo" value="@product.No" />
-                            <button type="submit" class="btn btn-primary">
-                                放入喜好清單
+                            <button type="submit" class="btn btn-sm btn-success">
+                                <i class="fas fa-heart"></i> 加入喜好
                             </button>
                         </form>
+                    </div>
                 </td>
             </tr>
         }
@@ -55,9 +56,27 @@
 </table>
 
 @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
+        // 加入喜好清單成功提示
+        @if (TempData["LikeSuccess"] != null)
+        {
+            <text>
+                Swal.fire({
+                    icon: 'success',
+                    title: '加入成功',
+                    text: '@TempData["LikeSuccess"]',
+                    confirmButtonText: 'OK',
+                    timer: 2000,
+                    timerProgressBar: true,
+                    showConfirmButton: false
+                });
+            </text>
+        }
+
+        // 刪除提示事件
         $(document).ready(function () {
-            // 刪除按鈕點擊事件
             $('.delete-btn').click(function () {
                 var productId = $(this).data('id');
                 Swal.fire({

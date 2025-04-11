@@ -20,6 +20,7 @@
     <thead class="table-dark">
         <tr>
             <th>流水序號</th>
+            <th>產品名稱</th>
             <th>購買數量</th>
             <th>扣款帳號</th>
             <th>總手續費(台幣)</th>
@@ -32,7 +33,8 @@
         {
             <tr>
                 <td>@likeList.SN</td>
-                <td>@likeList.OrderName</td>
+                <td>@likeList.Product.ProductName</td>
+                <td>@likeList.Quantity</td>
                 <td>@likeList.Account</td>
                 <td>@(likeList.TotalFee.HasValue ? likeList.TotalFee.Value.ToString("C0") : "-")</td>
                 <td>@(likeList.TotalAmount.HasValue ? likeList.TotalAmount.Value.ToString("C0") : "-")</td>

@@ -40,12 +40,12 @@ builder.Services.ConfigureApplicationCookie(options =>
 
     options.Events.OnRedirectToLogin = context =>
     {
-        context.Response.Redirect("/Identity/Account/Login");
+        context.Response.Redirect("/Account/Login");
         return Task.CompletedTask;
     };
     options.Events.OnRedirectToAccessDenied = context =>
     {
-        context.Response.Redirect("/Identity/Account/AccessDenied");
+        context.Response.Redirect("/Account/AccessDenied");
         return Task.CompletedTask;
     };
 

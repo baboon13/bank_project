@@ -27,16 +27,18 @@ namespace bank_project.Controllers
             var currentUser = await _userManager.GetUserAsync(User);
             if (currentUser == null)
             {
-                return Challenge();
+                // 當使用者未登入，導向自訂的登入頁面
+                return RedirectToAction("Login", "Account"); // 指定導向的控制器和動作
             }
 
             var likeLists = await _context.LikeLists
-                .Where(l => l.Account == currentUser.Account)
-                .Include(l => l.Product)  // 加入產品資料，方便顯示
+                .Where(l => l.Account == currentUser.Account)  // 使用 Account 關聯
+                .Include(l => l.Product)  // 加這行才會載入導航屬性
                 .ToListAsync();
-
+           
             return View(likeLists);
         }
+
 
         // 顯示新增喜好商品的頁面
         public IActionResult Create()
@@ -69,6 +71,46 @@ namespace bank_project.Controllers
 
             return View(model);  // 如果表單資料不合法，返回表單頁面
         }
+
+        // 顯示刪除確認頁面 (GET)
+        [HttpGet]
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var item = await _context.LikeLists
+                .Include(l => l.Product)
+                .FirstOrDefaultAsync(m => m.SN == id);
+
+            if (item == null)
+            {
+                return NotFound();
+            }
+
+            return View(item); // 要對應到你貼的 View
+        }
+
+        // 確認刪除 (POST)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteLikeList(int SN)
+        {
+            var item = await _context.LikeLists.FindAsync(SN);
+            if (item == null)
+            {
+                return NotFound();
+            }
+
+            _context.LikeLists.Remove(item);
+            await _context.SaveChangesAsync();
+
+            TempData["DeleteSuccess"] = "已成功刪除喜好項目";
+            return RedirectToAction(nameof(Index));
+        }
+
 
     }
 }
