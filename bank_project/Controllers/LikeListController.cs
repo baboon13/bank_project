@@ -62,6 +62,14 @@ namespace bank_project.Controllers
                 model.UserId = currentUser.Id;  // 設置使用者 ID
                 model.Account = currentUser.Account;  // 設置使用者帳號
 
+                // 👉 加入這段來計算商品費用
+                var product = await _context.Products.FindAsync(model.No);
+                if (product != null)
+                {
+                    model.TotalFee = (int)(product.Price * model.Quantity * product.FeeRate);
+                    model.TotalAmount = (int)(product.Price * model.Quantity + model.TotalFee);
+                }
+
                 // 新增商品到資料庫
                 _context.LikeLists.Add(model);
                 await _context.SaveChangesAsync();
@@ -110,6 +118,74 @@ namespace bank_project.Controllers
             TempData["DeleteSuccess"] = "已成功刪除喜好項目";
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+                return NotFound();
+
+            var item = await _context.LikeLists
+                .Include(l => l.Product)
+                .FirstOrDefaultAsync(l => l.SN == id);
+
+            if (item == null)
+                return NotFound();
+
+            return View(item);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, LikeListData model)
+        {
+            if (id != model.SN)
+                return NotFound();
+
+            if (ModelState.IsValid)
+            {
+                var likeListInDb = await _context.LikeLists.FindAsync(id);
+                if (likeListInDb == null)
+                    return NotFound();
+
+                // ✅ 只更新需要的欄位
+                Console.WriteLine($"更新前數量: {likeListInDb.Quantity}");
+                likeListInDb.Quantity = model.Quantity;
+                Console.WriteLine($"更新後數量: {likeListInDb.Quantity}");
+
+                // ✅ 如果需要重新計算 TotalFee 和 TotalAmount
+                var product = await _context.Products.FindAsync(likeListInDb.No);
+                Console.WriteLine($"傳回的 No 是: {model.No}");
+
+                if (product != null)
+                {
+                    likeListInDb.TotalFee = (int)(product.Price * likeListInDb.Quantity * product.FeeRate);
+                    likeListInDb.TotalAmount = (int)(product.Price * likeListInDb.Quantity + likeListInDb.TotalFee);
+                }
+
+                //await _context.SaveChangesAsync();
+                var changes = await _context.SaveChangesAsync();
+                Console.WriteLine($"更新 {changes} 筆資料");
+
+                TempData["EditSuccess"] = "喜好項目已成功更新！";
+                return RedirectToAction(nameof(Index));
+            }
+            if (!ModelState.IsValid)
+            {
+                foreach (var key in ModelState.Keys)
+                {
+                    var state = ModelState[key];
+                    foreach (var error in state.Errors)
+                    {
+                        Console.WriteLine($"欄位 {key} 發生錯誤：{error.ErrorMessage}");
+                    }
+                }
+            }
+
+            model.Product = await _context.Products.FindAsync(model.No); // 如果要回傳 View 用
+            return View(model);
+        }
+
+
 
 
     }

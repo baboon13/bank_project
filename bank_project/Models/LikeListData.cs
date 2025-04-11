@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace bank_project.Models
 {
@@ -32,7 +33,7 @@ namespace bank_project.Models
         [StringLength(20)]
         public string No { get; set; }  // 商品編號
 
-        // 設定外鍵關聯
+        [ValidateNever] // ← 加這行會跳過 MVC 的 model binding 驗證
         [ForeignKey("No")]
         public ProductData Product { get; set; }  // 這會讓我們可以直接訪問商品資料
 
@@ -42,6 +43,8 @@ namespace bank_project.Models
         public string UserId { get; set; }  // 外鍵：UserId
 
         // 關聯到 UserData（即 IdentityUser）
-        public UserData User { get; set; }
+        [ValidateNever]
+        public UserData User { get; set; } // ← 加這行會跳過 MVC 的 model binding 驗證
+
     }
 }
